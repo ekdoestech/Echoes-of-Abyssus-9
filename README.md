@@ -9,6 +9,7 @@ A modular, narrative-driven Python text adventure set in deep space.
 ![Platform](https://img.shields.io/badge/Platform-CLI%20%7C%20Cross--Platform-lightgrey)
 
 ----------------
+
 ## Overview
 
 **Echoes of Abyssus-9** is a modular text adventure built to demonstrate clean Python architecture and state-driven gameplay. Set aboard a derelict deep-space research station, you navigate interconnected rooms, collect key components, and ultimately confront a rogue AI known as The Marrow.
@@ -48,21 +49,21 @@ No packages, virtual environments, or configuration steps are needed.
 
 ## Setup and Run
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/ekdoestech/Echoes-of-Abyssus-9.git
-   ```
+    ```bash
+    git clone https://github.com/ekdoestech/Echoes-of-Abyssus-9.git
+    ```
 2. Change into the project directory:
-   ```bash
-   cd Echoes-of-Abyssus-9
-   ```
+    ```bash
+    cd Echoes-of-Abyssus-9
+    ```
 3. Run the game:
-   ```bash
+    ```bash
     python src/game.py
     ```
    - Alternatively (any OS, from project root):
-     ```bash
-     python -m src.game
-     ```
+    ```bash
+    python -m src.game
+    ```
 4. Follow on-screen instructions to move, explore, collect items, and survive.
 
 ----------------
