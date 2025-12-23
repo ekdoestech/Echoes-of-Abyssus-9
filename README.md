@@ -1,157 +1,149 @@
 # Echoes of Abyssus-9  
-A modular, narrative-driven Python text adventure set in deep space.
+A modular, state-driven Python text adventure set in deep space.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Focus](https://img.shields.io/badge/Focus-Game%20Architecture-purple)
-![Gameplay](https://img.shields.io/badge/Gameplay-Narrative%20Driven-indigo)
 ![State](https://img.shields.io/badge/State-Inventory%20%26%20Progression-teal)
-![Status](https://img.shields.io/badge/Status-v1.0%20Released-brightgreen)
+![Gameplay](https://img.shields.io/badge/Gameplay-Narrative%20Driven-indigo)
+![Tests](https://img.shields.io/badge/Tests-pytest-green)
 ![Platform](https://img.shields.io/badge/Platform-CLI%20%7C%20Cross--Platform-lightgrey)
-
-----------------
+![Status](https://img.shields.io/badge/Status-v1.0%20Released-brightgreen)
 
 ## Overview
 
-**Echoes of Abyssus-9** is a modular text adventure built to demonstrate clean Python architecture and state-driven gameplay. Set aboard a derelict deep-space research station, you navigate interconnected rooms, collect key components, and ultimately confront a rogue AI known as The Marrow.
+**Echoes of Abyssus-9** is a modular text adventure built to demonstrate clean Python architecture and state-driven gameplay. Set aboard a derelict deep-space research station, players explore interconnected rooms, collect progression-critical components, and ultimately confront a rogue AI known as *The Marrow*.
 
-**Highlights:**
-- Modular codebase designed for extensibility
-- Clean, maintainable Python code (PEP 8, type hints, docstrings)
-- Clear separation of world, player, event, and UI logic
-- State tracking for movement, inventory, progression, and endgame conditions
-- Narrative-focused exploration gameplay
-
-----------------
+### Highlights
+- Modular codebase designed for extensibility and reuse
+- Clean, maintainable Python (PEP 8, type hints, docstrings)
+- Clear separation of world, player state, events, and UI concerns
+- Explicit state tracking for movement, inventory, progression, and endgame outcomes
+- Narrative-focused exploration with defensive, state-based progression logic
 
 ## Tech Stack
-- **Language:** Python (3.8+)
-- **Frameworks/Libs:** Standard Library only (no external dependencies)
-- **Package manager:** None required
+- **Language:** Python 3.8+
+- **Dependencies:** Standard Library only (no external packages)
 - **Platform:** Cross-platform (Windows, macOS, Linux)
-- **Code style:** PEP 8
+- **Code style:** PEP 8-compliant with type hints and docstrings
 
-#### Scripts
-- Run game:
-  - `python src/game.py` (macOS/Linux)
-  - `python .\src\game.py` (Windows)
-  - `python -m src.game` (any OS, from project root)
-- There are currently no additional dev or packaging scripts.
+## Running the Game
 
-----------------
+Clone the repository and run the game from the project root:
 
-## Requirements
-The project is intentionally lightweight:
-- Python 3.8 or newer
-- A terminal/console capable of running Python
-No packages, virtual environments, or configuration steps are needed.
+```bash
+git clone https://github.com/ekdoestech/Echoes-of-Abyssus-9.git
+cd Echoes-of-Abyssus-9
+python src/game.py
+```
+Alternative execution methods:
+- `python .\src\game.py` (Windows)
+- `python -m src.game` (any OS)
 
-----------------
+No external dependencies, virtual environments, or configuration steps are required.
 
-## Setup and Run
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/ekdoestech/Echoes-of-Abyssus-9.git
-    ```
-2. Change into the project directory:
-    ```bash
-    cd Echoes-of-Abyssus-9
-    ```
-3. Run the game:
-    ```bash
-    python src/game.py
-    ```
-   - Alternatively (any OS, from project root):
-    ```bash
-    python -m src.game
-    ```
-4. Follow on-screen instructions to move, explore, collect items, and survive.
+## Testing
 
-----------------
+This project includes minimal, focused tests to validate core game logic.
+- Player movement and inventory management
+- Explicit progression and endgame outcomes
 
-## Planned Testing
-- World validation (rooms, exits, item placement)
-- Player mechanics (movement, inventory, item acquisition)
-- Endgame logic (state-based outcomes)
-
-----------------
+Tests can be run from the project root with:
+```bash
+pytest
+```
 
 ## Project Structure
+
 Current repository layout:
 ```
 README.md
+LICENSE
+pyproject.toml
+.gitignore
+
 src/
-  __init__.py
-  events.py       # Narrative events (final encounter, etc.)
-  game.py         # Main loop and command processing (entry point)
-  items.py        # ROOM_ITEMS dictionary and helper functions for item management
+  events.py       # Narrative events and progression outcomes
+  game.py         # Main loop and command routing (entry point)
+  items.py        # Item placement and item metadata
   player.py       # Player state, movement, and inventory
-  utils.py        # UI/printing helpers for status and instructions
-  world.py        # Rooms, exits, items, and world helpers
+  utils.py        # UI helpers and input normalization
+  world.py        # World layout, room graph, and progression IDs
+ 
+docs/            # Documentation for project structure and design decisions
+  architecture.md # Architecture overview and design decisions
+  gameplay.md     # Gameplay mechanics and progression details
+    
+tests/
+  test_player.py
+  test_events.py
 ```
 
-----------------
+## Gameplay Overview
 
-## Gameplay & Progression
+Echoes of Abyssus-9 is a narrative-driven exploration game where progression
+is governed by explicit player state and inventory requirements. Players
+must collect key system components to unlock the final encounter and
+determine the game’s outcome.
 
-Exploration and progression are driven by player state and inventory.
+For a detailed breakdown of gameplay mechanics and progression rules, see
+[`docs/gameplay.md`](docs/gameplay.md).
 
-**Gameplay Flow**
-1. Explore the interconnected rooms of Abyssus-9.
-2. Collect progression-critical components.
-3. Unlock restricted paths and interactions.
-4. Reach the Control Center and confront _The Marrow_.
+## Screenshots
 
-**Progression Items**
-Defeating _The Marrow_ requires collecting all six key components:
-- Circuit Override Key — Security Office
-- Engineering Scanner — Engineering Bay
-- Cryo Sample Vial — Observation Deck
-- Plasma Torch — Maintenance Tunnel
-- Access Card — Bio Lab
-- EMP Device Core — Server Room
+### Game Introduction
+The opening narrative establishes the mission, controls, and stakes aboard Abyssus-9.
+![Intro Screen](docs/screenshots/intro.png)
 
-These items form the core gating system that determines access and the outcome.
+### Command Help & Navigation
+Players can request available commands at any time using the `help` command.
+![Help Command](docs/screenshots/help-command.png)
 
-----------------
+### Exploration & Item Collection
+Rooms display descriptions, available exits, and automatically collect progression items.
+![Movement and Item Pickup](docs/screenshots/movement-and-item-pickup.png)
+
+### Endgame Outcomes
+The final encounter outcome is determined by collected progression items.
+
+**Failure Outcome**
+![Failure Ending](docs/screenshots/failure-end.png)
+
+**Success Outcome**
+![Success Ending](docs/screenshots/success-end.png)
+
 
 ## Architectural Features
-* Fully modular design dividing world, player state, events, and UI into separate modules 
-* Explicit state management (visited rooms, inventory, progression requirements)
-* Clear input/output loop with centralized command routing 
+* Modular design dividing world, player state, events, and UI into separate modules 
+* Explicit state management for inventory and progression requirements
+* Clear input/output loop with centralized command parsing and routing 
 * Defensive progression design preventing sequence breaks 
-* Extensible structure supporting new rooms, puzzles, and event types without modifying the core loop
+* Extensible structure supporting new rooms, puzzles, and event types without changes to the core loop
 
-----------------
+For a deeper dive into the architecture and design decisions, see
+[`docs/architecture.md`](docs/architecture.md).
 
-## Potential enhancements
-* ASCII art for rooms and key items
-* Enemy encounters and a lightweight combat system
-* Puzzle mechanics tied to room progression
-* Save/load support via JSON or serialized state
-* Branching dialogue and narrative choices
-* Ambient audio and soundtrack integration
-* Multiple endings based on player actions
-These improvements would evolve the game from a linear adventure into a richer interactive fiction engine.
-----------------
+## Potential Enhancements
+- Puzzle mechanics tied to room progression
+- Save/load support via serialized game state
+- Branching narrative choices and multiple endings
+- Additional event types and encounters
+- Optional ASCII art for key locations and items
+
+These enhancements would evolve the project from a linear adventure into a more flexible interactive fiction engine.
+
 
 ## Purpose
-This project was created as a portfolio project focused on modular Python programming, state-driven design, and game architecture fundamentals. It serves as a foundation for building more advanced interactive fiction systems while demonstrating clean, maintainable code and thoughtful game structure. 
 
-Contributions and suggestions are welcome—feel free to fork the repository and expand the station’s world or narrative.
+This project was created as a portfolio artifact focused on modular Python programming, state-driven design, and game architecture fundamentals. It serves as a foundation for building more advanced interactive fiction systems while demonstrating clean, maintainable code and thoughtful system design.
 
-----------------
+Contributions, feedback, and ideas for extending the station’s world or mechanics are welcome.
 
 ## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+MIT License — see the `LICENSE` file for details.  
 © 2025 ekdoestech
 
-----------------
-
 ## Acknowledgements
-Inspired by classic text adventures, atmospheric sci-fi narratives, and modern interactive fiction engines.
-Developed in part for SNHU coursework and continued as a personal exploration of game architecture.
-
-----------------
+Inspired by classic text adventures, atmospheric sci-fi narratives, and modern interactive fiction engines. Originally developed in part for SNHU coursework, this project was continued as a personal exploration of game architecture and system design.
 
 ## Contact
 For questions, feedback, or collaboration:
@@ -159,6 +151,4 @@ For questions, feedback, or collaboration:
 - Email: **ek.does.tech@gmail.com**
 - LinkedIn: https://www.linkedin.com/in/erica-kinch
 
-----------------
-
-# Enjoy the adventure, and may you outwit The Marrow!
+### Enjoy the adventure — and may you outwit *The Marrow*!

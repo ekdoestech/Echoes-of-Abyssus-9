@@ -14,9 +14,11 @@ structure abstractly and leaves UI rendering to higher-level modules.
 
 from __future__ import annotations
 
-from world import get_exits
-from utils import normalize_direction
-from items import get_room_item, set_room_item
+from collections.abc import Collection
+
+from .world import get_exits
+from .utils import normalize_direction
+from .items import get_room_item, set_room_item
 
 __all__ = ["Player"]
 
@@ -33,8 +35,8 @@ class Player:
         - Current room location
         - Inventory contents
 
-    Movement validation is performed using world data. Item collection updates
-    world state via helper functions defined in items.py.
+    Movement validation is performed using world-provided exit data.
+    Item collection mutates shared world state via helpers in items.py.
     """
 
     def __init__(self, starting_room: str):
@@ -56,16 +58,15 @@ class Player:
         Attempt to move the player in the specified direction.
 
         Args:
-            direction (str): User-entered direction (any case, extra spacing allowed).
+            direction (str): User-entered direction (case-insensitive).
 
         Returns:
-            str | None:
-                - The destination room name if movement is valid.
-                - None if no valid exit exists in that direction.
+            str | None: Destination room name if movement is valid, otherwise None.
         """
-        normalized = normalize_direction(direction)
+        normalized_direction = normalize_direction(direction)
         exits = get_exits(self.current_room)
-        return exits.get(normalized)
+
+        return exits.get(normalized_direction)
 
     # ----------------------------------------------------------------------
     # Item Collection
@@ -76,9 +77,7 @@ class Player:
         Attempt to collect the item in the player's current room.
 
         Returns:
-            str | None:
-                - The name of the collected item, if successful.
-                - None if the room contains no item.
+            str | None: Name of the collected item if successful, otherwise None.
         """
         item = get_room_item(self.current_room)
 
@@ -86,5 +85,19 @@ class Player:
             return None
 
         self.inventory.append(item)
-        set_room_item(self.current_room, None)  # Item removed from the world
+        set_room_item(self.current_room, None)  # Remove item from the world
+
         return item
+
+    # ----------------------------------------------------------------------
+    # Inventory Access
+    # ----------------------------------------------------------------------
+
+    @property
+    def inventory_view(self) -> Collection[str]:
+        """
+        Read-only view of the player's inventory.
+
+        Exposed as an immutable collection to discourage direct mutation.
+        """
+        return tuple(self.inventory)

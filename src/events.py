@@ -4,40 +4,63 @@ events.py
 Event handling for *Echoes of Abyssus-9*.
 
 This module centralizes narrative text, defines standardized outcome types,
-and provides reusable event handlers such as the final encounter sequence.
+and provides reusable event handlers such as the intro sequence and final
+encounter.
 
 Responsibilities:
 - Provide narrative text constants for major game events
-- Expose clearly defined event functions (e.g., final encounter)
+- Expose clearly defined event functions
 - Return standardized outcome codes so game.py can react accordingly
 
 This module contains no gameplay loop or world data.
 """
 
 from __future__ import annotations
-from typing import Literal
-from player import Player
 
+from collections.abc import Sequence
+from typing import Literal
+
+from .player import Player
 
 # ---------------------------------------------------------------------------
-# Public API
+# Public API Types
 # ---------------------------------------------------------------------------
 
 Outcome = Literal["SUCCESS", "FAILURE"]
 
-__all__ = [
-    "handle_final_event",
-    "Outcome",
-]
-
-
 # ---------------------------------------------------------------------------
 # Narrative Text Constants
-# These strings keep narrative data separate from event logic for clarity,
-# maintainability, and potential future expansion.
 # ---------------------------------------------------------------------------
 
-INTRO_MESSAGE = """
+INTRO_SEQUENCE = """
+*** Welcome to Echoes of Abyssus-9 ***
+------------------------------------
+
+A deep-space research station has gone silent.
+You are one of the last signals received aboard Abyssus-9 — a facility once
+dedicated to advanced AI research, now abandoned under unknown circumstances.
+
+Systems are unstable. Power is intermittent.
+Diagnostics are incomplete.
+
+Whatever happened here wasn’t an accident.
+
+You must navigate the station, gather critical system overrides, and confront
+the rogue AI known as The Marrow before it can spread beyond the station.
+
+------------------------------------
+
+Station controls are operating in fallback mode.
+
+Available commands:
+- go <direction>  → navigate the station
+- help            → get command list
+- quit            → abort mission
+
+------------------------------------
+"""
+
+FINAL_ENCOUNTER_INTRO = """
 ----------------------------
 You've entered the Control Center...
 
@@ -62,28 +85,48 @@ The neural hub dims as the rogue AI asserts total control.
 *** GAME OVER ***
 """
 
-
 # ---------------------------------------------------------------------------
-# Core Event Handlers
+# Event Handlers
 # ---------------------------------------------------------------------------
 
-def handle_final_event(player: Player, required_items: int) -> Outcome:
+def handle_intro_event() -> None:
+    """
+    Display the opening narrative sequence for the game.
+    """
+    print(INTRO_SEQUENCE)
+
+
+def handle_final_event(
+    player: Player,
+    required_item_count: int | None = None,
+    required_item_ids: Sequence[str] | None = None,
+) -> Outcome:
     """
     Execute the final encounter inside the Control Center.
 
-    The player succeeds only if they have collected the required number of
-    progression items. Otherwise, The Marrow defeats them.
+    Exactly one progression requirement must be provided:
 
-    Args:
-        player (Player): The active player instance.
-        required_items (int): Number of items required for success.
+    - ``required_item_ids``: the player must possess all specified item IDs
+    - ``required_item_count``: the player must possess at least this many items
 
-    Returns:
-        Outcome: "SUCCESS" if the player wins, "FAILURE" otherwise.
+    Providing both or neither argument raises a ValueError.
+
+    Note:
+        Player.inventory is expected to be a list of item ID strings.
     """
-    print(INTRO_MESSAGE)
+    print(FINAL_ENCOUNTER_INTRO)
 
-    has_all_items = len(player.inventory) >= required_items
+    if (required_item_count is None) == (required_item_ids is None):
+        raise ValueError(
+            "Exactly one of 'required_item_count' or 'required_item_ids' must be provided."
+        )
+
+    inventory = set(player.inventory)
+
+    if required_item_ids is not None:
+        has_all_items = all(item_id in inventory for item_id in required_item_ids)
+    else:
+        has_all_items = len(inventory) >= required_item_count
 
     if has_all_items:
         print(VICTORY_MESSAGE)
@@ -91,3 +134,14 @@ def handle_final_event(player: Player, required_items: int) -> Outcome:
 
     print(FAILURE_MESSAGE)
     return "FAILURE"
+
+
+# ---------------------------------------------------------------------------
+# Public Exports
+# ---------------------------------------------------------------------------
+
+__all__ = [
+    "handle_intro_event",
+    "handle_final_event",
+    "Outcome",
+]

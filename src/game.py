@@ -16,21 +16,42 @@ the game flow using helpers provided by other modules.
 
 from __future__ import annotations
 
-from events import handle_final_event
-from player import Player
-from utils import (
+from .events import handle_intro_event, handle_final_event
+from .player import Player
+from .utils import (
     normalize_direction,
-    print_move_success,
     print_move_failure,
+    print_move_success,
     print_room_description,
+    describe_exits,
 )
-from world import get_room_description, REQUIRED_ITEMS
+from .world import get_room_description, get_exits
+from .items import ROOM_ITEMS
 
 __all__ = ["main"]
 
-# Room that triggers the final encounter
-GAME_OVER_ROOM = "Control Center"
+# ---------------------------------------------------------------------------
+# Progression Requirements
+# ---------------------------------------------------------------------------
 
+REQUIRED_ITEM_IDS = [item for item in ROOM_ITEMS.values() if item]
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+FINAL_ROOM = "Control Center"
+
+QUIT_COMMAND = "quit"
+MOVE_PREFIX = "go "
+HELP_COMMAND = "help"
+
+HELP_TEXT = (
+    "Commands:\n"
+    "- 'go <direction>' to move\n"
+    "- 'help' for commands\n"
+    "- 'quit' to exit"
+)
 
 # ---------------------------------------------------------------------------
 # Main Game Loop
@@ -39,77 +60,62 @@ GAME_OVER_ROOM = "Control Center"
 def main() -> None:
     """
     Entry point for the Echoes of Abyssus-9 adventure.
-
-    Initializes the player, processes commands, handles room transitions,
-    and triggers the endgame event when the final room is reached.
     """
     player = Player(starting_room="Docking Bay")
 
-    print("\n*** Welcome to Echoes of Abyssus-9 ***")
-    print("Type 'go <direction>' to move or 'quit' to exit.\n")
+    # Display opening narrative and instructions
+    handle_intro_event()
 
-    # ----------------------------------------------------------------------
-    # Primary Gameplay Loop
-    # ----------------------------------------------------------------------
-    while player.current_room != GAME_OVER_ROOM:
+    while player.current_room != FINAL_ROOM:
         print(f"\nYou are in the {player.current_room}.")
         print_room_description(get_room_description(player.current_room))
+        describe_exits(get_exits(player.current_room))
 
         command = input("> ").strip().lower()
 
-        # --------------------------------------------------------------
-        # Movement Commands
-        # --------------------------------------------------------------
-        if command.startswith("go "):
-            raw_direction = command[3:]
-            direction = normalize_direction(raw_direction)
-
+        if command.startswith(MOVE_PREFIX):
+            direction = normalize_direction(command[len(MOVE_PREFIX):])
             destination = player.move(direction)
+
             if destination:
                 player.current_room = destination
                 print_move_success(direction, destination)
 
-                # Print room description
-                print_room_description(get_room_description(player.current_room))
-
-                # Auto-collect items
+                # Auto-collect items on room entry
                 item = player.collect_item()
                 if item:
                     print(f"You picked up: {item}")
-
             else:
                 print_move_failure(direction)
 
-        # --------------------------------------------------------------
-        # Quit Command
-        # --------------------------------------------------------------
-        elif command == "quit":
+        elif command == QUIT_COMMAND:
             print("\nMission aborted. Exiting Abyssus-9.")
             return
 
-        # --------------------------------------------------------------
-        # Invalid Command Handler
-        # --------------------------------------------------------------
+        elif command == HELP_COMMAND:
+            print(HELP_TEXT)
+
         else:
             print("Invalid command. Try 'go <direction>' or 'quit'.")
 
     # ----------------------------------------------------------------------
     # Endgame Sequence
     # ----------------------------------------------------------------------
-    outcome = handle_final_event(player, REQUIRED_ITEMS)
+
+    outcome = handle_final_event(
+        player,
+        required_item_ids=REQUIRED_ITEM_IDS,
+    )
 
     print(
         "\n*** Mission Summary ***\n"
         f"Items Collected: {player.inventory}\n"
-        f"Total Items: {len(player.inventory)} / {REQUIRED_ITEMS}\n"
+        f"Total Items: {len(player.inventory)} / {len(REQUIRED_ITEM_IDS)}\n"
         f"Outcome: {outcome}\n"
         "------------------------\n"
         "Thank you for playing Echoes of Abyssus-9.\n"
     )
 
-# ---------------------------------------------------------------------------
-# Module Entrypoint
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main()
